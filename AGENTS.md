@@ -1,14 +1,17 @@
 # Arbeitsregeln für drone-inventory
 
 Dieses SYP-Schulprojekt verwaltet Drohnen und deren Ausleihe. Grundlage sind die
-Vorgaben des Auftraggebers und README.md. Ein separater SYP-Projektauftrag liegt
-nicht im Repository vor; fehlende Details nicht als beschlossene Anforderungen ausgeben.
+Vorgaben des Auftraggebers und der verbindliche Projektauftrag unter
+`docs/source/INF4_SYP_19_Projektauftrag_Drohnenverwaltung.pdf`. Requirements und
+Domänenmodell stehen in `docs/requirements.md` und `docs/ddd.md`; fehlende Details
+nicht als beschlossene Anforderungen ausgeben.
 
 ## Architektur
 
 - `backend/DroneInventory.Api/`: ASP.NET Core 10 Web API mit C#.
 - `frontend/drone-inventory-ui/`: Angular mit TypeScript.
-- Kommunikation über REST/JSON.
+- Das Frontend kommuniziert ausschließlich über REST/JSON mit dem Backend;
+  direkter Datenbankzugriff aus dem Frontend ist ausgeschlossen.
 - Entity Framework Core und SQLite sind für die Persistenz vorgesehen.
 - Das Backend setzt Fachregeln durch; das Frontend stellt die Bedienung bereit.
 
@@ -24,8 +27,8 @@ Issues. Keine alternativen Namen oder zusätzlichen Domänenentitäten einführe
 | --- | --- |
 | Drone | Eine verwaltete Drohne. |
 | StudentGroup | Eine Gruppe, die Drohnen ausleiht. |
-| Loan | Eine Ausleihe an eine StudentGroup, aktiv bis zur Rückgabe. |
-| LoanItem | Zuordnung einer Drone zu einer Loan mit Zubehörmengen. |
+| Loan | Eine Ausleihe genau einer Drone an eine StudentGroup, aktiv bis zur Rückgabe. |
+| LoanItem | Zubehörposition einer Loan mit Type (Battery oder Propeller) und Quantity. |
 
 Verbindliche Fachregeln:
 
@@ -39,6 +42,10 @@ Verbindliche Fachregeln:
   Verfügbarkeitszustand als fachliche Quelle einführen.
 
 ## OpenSpec vor der Implementierung
+
+OpenSpec ist die verbindliche Source of Truth für das vereinbarte fachliche
+Verhalten. Änderungen daran zuerst in den OpenSpec-Artefakten festhalten und
+prüfen; fehlende Anforderungen nicht als beschlossen darstellen.
 
 Vor jeder fachlichen Implementierung zuerst `openspec/config.yaml`, vorhandene
 Spezifikationen und zugehörige Issues lesen. Den OpenSpec-Workflow verwenden:
@@ -61,20 +68,28 @@ Bedarf `openspec init --tools codex --language German --no-animation` ausführen
 
 1. Vorhandenes Issue und Akzeptanzkriterien lesen; REQ-Kennungen aus dem
    Projektauftrag übernehmen. Fehlende Inhalte nicht erfinden.
-2. Einen nachvollziehbaren Branch verwenden, etwa `feat/<issue-nummer>-<kurzname>`
+2. GitHub Issues und das vorhandene GitHub Project „Drone Inventory“ zur
+   Aufgabenplanung verwenden. Vorhandene Issues im Project nachführen
+   (Backlog, Ready, In Progress, Review, Done); keine Aufgaben erfinden.
+3. Je Implementierung genau einen abgegrenzten Task bearbeiten. Für jeden Task
+   einen eigenen Branch und eine eigene Pull Request verwenden.
+   Einen nachvollziehbaren Branch verwenden, etwa `feat/<issue-nummer>-<kurzname>`
    oder `docs/<kurzname>` für reine Dokumentation.
-3. Vor fachlicher Umsetzung den OpenSpec-Change mit dem vorhandenen Issue
+4. Vor fachlicher Umsetzung den OpenSpec-Change mit dem vorhandenen Issue
    verknüpfen; Issue, Change und spätere Pull Request gegenseitig referenzieren.
-4. Vereinbarten Umfang umsetzen, passende Prüfungen ausführen und Ergebnisse in
-   der Pull Request dokumentieren. Änderungen vor dem Commit prüfen.
-5. Die Pull Request referenziert das Issue. `Closes #<nummer>` nur bei vollständig
+5. Vereinbarten Umfang umsetzen, passende Prüfungen ausführen und Ergebnisse in
+   der Pull Request dokumentieren. Vor jedem Commit passende Tests ausführen sowie
+   `git diff` und `git diff --check` prüfen. Bei reinen Dokumentationsänderungen
+   genügen passende Dokumentations- und Konfigurationsprüfungen; Ergebnisse festhalten.
+6. Die Pull Request referenziert das Issue. `Closes #<nummer>` nur bei vollständig
    erfüllten Akzeptanzkriterien verwenden; Issues erst nach Abschluss schließen.
 
 Keine Issues automatisch anlegen; neue Issues nur bei ausdrücklichem Auftrag.
-Für die aktuelle Einrichtung weder Issues noch einen OpenSpec-Change anlegen
+Für die aktuelle Dokumentationsarbeit weder Issues noch einen OpenSpec-Change anlegen
 oder vorschlagen. REQ-001 bis REQ-010 bleiben unimplementiert.
 
 ## Out of Scope
 
-Login, Benutzerrollen, einzelne Akku-IDs, Reservierungen, Schadensverwaltung,
-Statistiken und Exporte gehören nicht zum Projektumfang.
+Login, Benutzerkonten, Benutzerrollen, einzelne Akku-IDs, Reservierungen,
+Schadensverwaltung, Rückgabedifferenzen, Auswertungen, Statistiken und Exporte
+gehören nicht zum Projektumfang.

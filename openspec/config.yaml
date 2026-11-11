@@ -2,20 +2,24 @@ schema: spec-driven
 
 context: |
   Projekt: drone-inventory, SYP-Schulprojekt zur Drohnenverwaltung.
-  Grundlage: Auftraggeber-Vorgaben und README.md; ein separater SYP-Projektauftrag
-  liegt derzeit nicht im Repository vor. Fehlende Anforderungen nicht erfinden.
+  Verbindliche Quelle: docs/source/INF4_SYP_19_Projektauftrag_Drohnenverwaltung.pdf.
+  Requirements: docs/requirements.md; Domänenmodell: docs/ddd.md.
+  Eine Loan gehört genau zu einer Drone und einer StudentGroup.
+  Fehlende Anforderungen nicht erfinden; offene Fragen sind in den Requirements markiert.
   Sprache: Deutsch; OpenSpec-Strukturüberschriften und SHALL/MUST bleiben Englisch.
 
-  Architektur: ASP.NET Core 10 Web API im Backend, Angular im Frontend,
+  Architektur: ASP.NET Core 10 Web API im Backend, Angular mit TypeScript im Frontend,
   Kommunikation über REST/JSON. Entity Framework Core und SQLite sind vorgesehen,
   aber noch nicht eingerichtet. Beide Projekte sind derzeit Grundgerüste.
-  Das Backend setzt die Fachregeln durch; das Frontend bedient die API.
+  Die Geschäftslogik liegt im Backend; das Frontend kommuniziert ausschließlich
+  über REST/JSON mit der API und greift nicht direkt auf die Datenbank zu.
+  OpenSpec ist die verbindliche Source of Truth für vereinbartes fachliches Verhalten.
 
   Ausschließlich diese Domänenbegriffe verwenden:
   - Drone: eine verwaltete Drohne.
   - StudentGroup: eine Gruppe, die Drohnen ausleiht.
   - Loan: eine Ausleihe an eine StudentGroup, aktiv bis zur Rückgabe.
-  - LoanItem: Zuordnung einer Drone zu einer Loan mit Zubehörmengen.
+  - LoanItem: Zubehörposition einer Loan mit Type (Battery oder Propeller) und Quantity.
 
   Verbindliche Fachregeln:
   - Eine Drone darf höchstens einer aktiven Loan zugeordnet sein.
@@ -26,11 +30,12 @@ context: |
   - Zubehör wird ausschließlich als Menge verwaltet, ohne eigene Identitäten.
   - Verfügbarkeit ergibt sich aus aktiven Loans, ohne unabhängig gepflegten Zustand.
 
-  Out of Scope: Login, Benutzerrollen, einzelne Akku-IDs, Reservierungen,
-  Schadensverwaltung, Statistiken und Exporte.
+  Out of Scope: Login, Benutzerkonten, Benutzerrollen, einzelne Akku-IDs,
+  Reservierungen, Schadensverwaltung, Rückgabedifferenzen, Auswertungen,
+  Statistiken und Exporte.
 
   Vor fachlicher Implementierung OpenSpec verwenden; siehe AGENTS.md.
-  Aktueller Auftrag: ausschließlich Einrichtung, keinen Change vorschlagen,
+  Aktueller Auftrag: ausschließlich Requirements- und DDD-Dokumentation, keinen Change vorschlagen,
   REQ-001 bis REQ-010 nicht implementieren, keine Geschäftslogik oder Datenbank
   erstellen und keine GitHub Issues erzeugen.
 
@@ -51,3 +56,6 @@ rules:
   tasks:
     - Leite Aufgaben aus den Spezifikationen ab und verknüpfe sie mit vorhandenen Issues.
     - Plane passende Prüfungen des spezifizierten Verhaltens ein.
+    - Bearbeite je Implementierung genau einen abgegrenzten Task mit eigenem Branch und eigener Pull Request.
+    - Nutze vorhandene GitHub Issues und das GitHub Project zur Aufgabenplanung; neue Issues nur auf ausdrücklichen Auftrag.
+    - Prüfe vor dem Commit passende Tests, git diff und git diff --check; dokumentiere die Ergebnisse.
