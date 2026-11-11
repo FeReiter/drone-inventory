@@ -13,6 +13,11 @@ OpenSpec-Spezifikationen. Das Wetterbeispiel der .NET-Vorlage wurde entfernt;
 das Frontend zeigt die unveränderte Angular-Begrüßungsseite. Beide Projekte sind
 noch nicht miteinander verbunden.
 
+OpenSpec ist für die Planung eingerichtet (`openspec/config.yaml`); fachliche
+Spezifikationen und Changes wurden noch nicht angelegt. Arbeitsregeln und
+GitHub-Issue-Workflow stehen in `AGENTS.md`. Die Codex-Integration liegt unter
+`.agents/skills/openspec-*`. Vor fachlichen Implementierungen ist OpenSpec zu verwenden.
+
 ## Voraussetzungen
 
 - .NET 10 SDK **einschließlich ASP.NET Core 10 Runtime**. Kontrolle mit
