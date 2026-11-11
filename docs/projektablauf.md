@@ -290,8 +290,8 @@ Vor Erstellung dieser Dokumentation waren die drei genannten Commits auf
 die späteren Grundgerüste und OpenSpec liegen auf **main**. Für die Bewertung daher
 gezielt `main` öffnen. Die Standardbranch-Einstellung wurde nicht verändert.
 
-Die aktuelle Arbeit ergänzt ausschließlich `docs/projektablauf.md`; Anwendungscode
-bleibt unverändert. Es wurden keine GitHub Issues oder Project-Einträge angelegt.
+Die damalige Dokumentationsarbeit ergänzte ausschließlich `docs/projektablauf.md`;
+Anwendungscode blieb unverändert. Es wurden keine GitHub Issues oder Project-Einträge angelegt.
 
 Wichtige Befehle zur Nachprüfung:
 
@@ -311,3 +311,41 @@ Projektbeschreibung und getrennte Grundgerüste für API und Oberfläche. Die RE
 hält erste technische Prüfungen und die nötigen .NET-Hilfslösungen fest. Anschließend
 wurden mit OpenSpec die Regeln für die spätere fachliche Planung eingerichtet.
 Die eigentliche Drohnenverwaltung muss auf dieser Grundlage noch entwickelt werden.
+
+
+## 9. OpenSpec-Einrichtung prüfen und Arbeitsregeln vervollständigen
+
+Bei der erneuten Einrichtung am 11. November 2026 waren `openspec/config.yaml`,
+die leeren Verzeichnisse für Spezifikationen und Changes sowie alle sechs
+Codex-Skills bereits vorhanden. Deshalb war kein erneutes `openspec init` nötig.
+Die bestehende Integration wurde beibehalten, statt generierte Dateien unnötig
+neu zu schreiben.
+
+`openspec/config.yaml` verwendet weiterhin `schema: spec-driven`. Der Kontext
+nennt nun ausdrücklich Angular mit TypeScript neben ASP.NET Core 10 Web API,
+Entity Framework Core, SQLite und REST/JSON. Die vier Domänenbegriffe, alle sieben
+Fachregeln und die ausgeschlossenen Funktionen bleiben verbindlich dokumentiert.
+Entity Framework Core und SQLite sind weiterhin nur vorgesehen.
+
+`AGENTS.md` und die Konfiguration erklären OpenSpec ausdrücklich zur Source of
+Truth für vereinbartes fachliches Verhalten. Geschäftslogik gehört ins Backend;
+das Frontend nutzt ausschließlich die REST/JSON-API. Anforderungen erhalten
+GIVEN/WHEN/THEN-Szenarien. Je Implementierung wird ein abgegrenzter Task mit
+eigenem Branch und eigener Pull Request bearbeitet. GitHub Issues und das
+vorhandene Project dienen zur Planung. Vor einem Commit werden passende Tests,
+`git diff` und `git diff --check` geprüft. Für diese reine Einrichtung sind
+Konfigurationsprüfungen passend; Anwendungs-Builds und Anwendungstests wurden
+nicht erneut ausgeführt.
+
+Die Einrichtung wird auf `docs/openspec-arbeitsregeln` versioniert. Die Prüfungen
+`openspec doctor` und `openspec schema validate spec-driven` waren erfolgreich.
+`openspec list` und `openspec list --specs` bestätigten, dass keine aktiven Changes
+und keine Spezifikationen vorhanden sind. `openspec validate --all --strict
+--no-interactive` meldete erwartungsgemäß `No items found to validate.`; dies
+validiert keine Fachanforderungen. Die YAML-Struktur und die Codex-Skilldateien
+wurden zusätzlich geprüft; `git diff --check` meldete keine Formatfehler.
+
+Ein separater SYP-Projektauftrag ist weiterhin nicht im Repository vorhanden.
+Deshalb werden keine zusätzlichen Anforderungen oder REQ-Inhalte angenommen.
+REQ-001 bis REQ-010 bleiben unimplementiert. Es wurden keine Changes, Issues oder
+Project-Einträge angelegt und keine Anwendungscode-Dateien verändert.

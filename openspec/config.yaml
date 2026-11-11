@@ -6,10 +6,12 @@ context: |
   liegt derzeit nicht im Repository vor. Fehlende Anforderungen nicht erfinden.
   Sprache: Deutsch; OpenSpec-Strukturüberschriften und SHALL/MUST bleiben Englisch.
 
-  Architektur: ASP.NET Core 10 Web API im Backend, Angular im Frontend,
+  Architektur: ASP.NET Core 10 Web API im Backend, Angular mit TypeScript im Frontend,
   Kommunikation über REST/JSON. Entity Framework Core und SQLite sind vorgesehen,
   aber noch nicht eingerichtet. Beide Projekte sind derzeit Grundgerüste.
-  Das Backend setzt die Fachregeln durch; das Frontend bedient die API.
+  Die Geschäftslogik liegt im Backend; das Frontend kommuniziert ausschließlich
+  über REST/JSON mit der API und greift nicht direkt auf die Datenbank zu.
+  OpenSpec ist die verbindliche Source of Truth für vereinbartes fachliches Verhalten.
 
   Ausschließlich diese Domänenbegriffe verwenden:
   - Drone: eine verwaltete Drohne.
@@ -51,3 +53,6 @@ rules:
   tasks:
     - Leite Aufgaben aus den Spezifikationen ab und verknüpfe sie mit vorhandenen Issues.
     - Plane passende Prüfungen des spezifizierten Verhaltens ein.
+    - Bearbeite je Implementierung genau einen abgegrenzten Task mit eigenem Branch und eigener Pull Request.
+    - Nutze vorhandene GitHub Issues und das GitHub Project zur Aufgabenplanung; neue Issues nur auf ausdrücklichen Auftrag.
+    - Prüfe vor dem Commit passende Tests, git diff und git diff --check; dokumentiere die Ergebnisse.
