@@ -1,0 +1,36 @@
+# .NET build output
+**/bin/
+**/obj/
+**/TestResults/
+
+# Angular / Node build output and caches
+**/node_modules/
+**/dist/
+**/out-tsc/
+**/.angular/
+**/coverage/
+
+# Local settings, secrets and databases
+.env
+.env.*
+!.env.example
+**/appsettings.Local.json
+**/appsettings.*.Local.json
+*.user
+*.suo
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+
+# Local editors, agent settings and OS files
+.vs/
+.vscode/
+.idea/
+.agents/
+.codex/
+.aws/
+.DS_Store
+Thumbs.db
+*.log
