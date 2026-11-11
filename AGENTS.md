@@ -1,8 +1,10 @@
 # Arbeitsregeln für drone-inventory
 
 Dieses SYP-Schulprojekt verwaltet Drohnen und deren Ausleihe. Grundlage sind die
-Vorgaben des Auftraggebers und README.md. Ein separater SYP-Projektauftrag liegt
-nicht im Repository vor; fehlende Details nicht als beschlossene Anforderungen ausgeben.
+Vorgaben des Auftraggebers und der verbindliche Projektauftrag unter
+`docs/source/INF4_SYP_19_Projektauftrag_Drohnenverwaltung.pdf`. Requirements und
+Domänenmodell stehen in `docs/requirements.md` und `docs/ddd.md`; fehlende Details
+nicht als beschlossene Anforderungen ausgeben.
 
 ## Architektur
 
@@ -25,8 +27,8 @@ Issues. Keine alternativen Namen oder zusätzlichen Domänenentitäten einführe
 | --- | --- |
 | Drone | Eine verwaltete Drohne. |
 | StudentGroup | Eine Gruppe, die Drohnen ausleiht. |
-| Loan | Eine Ausleihe an eine StudentGroup, aktiv bis zur Rückgabe. |
-| LoanItem | Zuordnung einer Drone zu einer Loan mit Zubehörmengen. |
+| Loan | Eine Ausleihe genau einer Drone an eine StudentGroup, aktiv bis zur Rückgabe. |
+| LoanItem | Zubehörposition einer Loan mit Type (Battery oder Propeller) und Quantity. |
 
 Verbindliche Fachregeln:
 
@@ -83,10 +85,11 @@ Bedarf `openspec init --tools codex --language German --no-animation` ausführen
    erfüllten Akzeptanzkriterien verwenden; Issues erst nach Abschluss schließen.
 
 Keine Issues automatisch anlegen; neue Issues nur bei ausdrücklichem Auftrag.
-Für die aktuelle Einrichtung weder Issues noch einen OpenSpec-Change anlegen
+Für die aktuelle Dokumentationsarbeit weder Issues noch einen OpenSpec-Change anlegen
 oder vorschlagen. REQ-001 bis REQ-010 bleiben unimplementiert.
 
 ## Out of Scope
 
-Login, Benutzerrollen, einzelne Akku-IDs, Reservierungen, Schadensverwaltung,
-Statistiken und Exporte gehören nicht zum Projektumfang.
+Login, Benutzerkonten, Benutzerrollen, einzelne Akku-IDs, Reservierungen,
+Schadensverwaltung, Rückgabedifferenzen, Auswertungen, Statistiken und Exporte
+gehören nicht zum Projektumfang.

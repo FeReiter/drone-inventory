@@ -349,3 +349,57 @@ Ein separater SYP-Projektauftrag ist weiterhin nicht im Repository vorhanden.
 Deshalb werden keine zusätzlichen Anforderungen oder REQ-Inhalte angenommen.
 REQ-001 bis REQ-010 bleiben unimplementiert. Es wurden keine Changes, Issues oder
 Project-Einträge angelegt und keine Anwendungscode-Dateien verändert.
+
+
+## 10. Requirements und DDD aus dem Originalauftrag dokumentieren
+
+Am 11. November 2026 wurde der vollständige Projektauftrag unter
+`docs/source/INF4_SYP_19_Projektauftrag_Drohnenverwaltung.pdf` bereitgestellt.
+Die früheren Hinweise auf eine fehlende Quelle beschreiben den damaligen Stand;
+ab diesem Schritt ist das PDF die verbindliche Quelle. Alle 43 PDF-Seiten wurden
+mit `pdftotext -layout` vollständig ausgelesen und gelesen. `pdfinfo` bestätigt
+43 Seiten und 305862 Bytes. Die Originaldatei wird unverändert mitversioniert.
+SHA-256:
+`ae7a1582059b765d6fb3a1c399084846479cf85fe1f9e1ba114e790b745851b5`.
+
+Auf dem Branch `docs/requirements-ddd` entstanden:
+
+- `docs/requirements.md`: alle zehn REQ-Kennungen aus Seite 13, ausgearbeitet mit SHALL und testbaren GIVEN/WHEN/THEN-Szenarien gemäß Seiten 14–18; sieben Fachregeln, Out of Scope und ausdrücklich offene Fragen.
+- `docs/ddd.md`: die vier Entities, sämtliche auf Seite 11 vorgegebenen Attribute, Beziehungen, ein Mermaid-Domänenmodell und die fachliche Einordnung von Identität, Mengenwerten und Aggregat.
+
+Die Quelle klärt einen Widerspruch zur bisherigen Vorbereitung: Loan enthält
+DroneId und StudentGroupId. LoanItem ist eine Zubehörposition mit Type und
+Quantity, keine Zuordnung zwischen Drone und Loan. Deshalb wurden AGENTS.md und
+openspec/config.yaml gezielt korrigiert und um den Quellenverweis ergänzt.
+Benutzerkonten, Rückgabedifferenzen und Auswertungen wurden gemäß Seite 19 als
+weitere ausdrücklich ausgeschlossene Funktionen benannt.
+
+Verfügbarkeit wird aus aktiven Loans abgeleitet. Loan.Status kennt Active und
+Returned; Drone zeigt Available oder Loaned. Zubehör hat keine Geräteidentität;
+die vorgegebene LoanItem.Id identifiziert eine Position. Loan mit ihren LoanItems
+wird begründet als fachliches Aggregat beschrieben. Historische Loans und
+LoanItems bleiben erhalten. Kein zusätzliches Statusfeld oder Zubehörmodell
+wurde als Implementierung eingeführt.
+
+Unklarheiten werden nicht stillschweigend entschieden: unter anderem ID-Typen,
+Namensvalidierung, Datumsermittlung, wiederholte Rückgabe und die Speicherung
+von Nullmengen. Der auf Seite 43 erwähnte zusätzliche Leitfaden liegt nicht vor.
+Die auf Seiten 37–38 diskutierten künftigen Change Requests sind kein aktueller
+Auftrag. Eine Schadensnotiz im Freitext löst keine Ausleihsperre aus.
+
+Prüfnachweise: Die REQ-Zuordnung wurde gegen Seite 13 und jede Ausarbeitung gegen
+Seiten 14–18 abgeglichen; Attribute gegen Seite 11, Fachregeln gegen Seite 12,
+Ausschlüsse gegen Seite 19. Das Beispiel auf Seite 18 dient als Gegenprobe für
+Loan und die zwei LoanItems. Strukturprüfungen kontrollieren alle zehn eindeutigen
+REQ-Abschnitte mit SHALL und GIVEN/WHEN/THEN, die Attributlisten, lokalen Links,
+YAML-Struktur und PDF-Prüfsumme. Die Mermaid-Beziehungen wurden fachlich gegen
+die beschriebenen Kardinalitäten geprüft. Ein grafischer Mermaid-Render ist
+kein Bestandteil dieser Prüfung. Der vollständige Diff
+und `git diff --check` wurden vor dem Commit geprüft. Anwendungs-Builds und Anwendungstests sind für
+diese reine Dokumentationsänderung nicht erforderlich und wurden nicht ausgeführt.
+
+Es wurden keine OpenSpec-Changes, Issues oder Anwendungscode erstellt.
+Die Requirements sind noch nicht implementiert. Commit und Push veröffentlichen
+die Dokumentation einschließlich Original-PDF; eine Pull Request dient dem
+Review und wird nicht automatisch gemergt. Der Branch baut auf der vorherigen,
+noch offenen Einrichtungs-PR #1 auf; diese Abhängigkeit wird in der PR benannt.
