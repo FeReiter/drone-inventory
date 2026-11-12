@@ -159,3 +159,17 @@ zusätzliche aus dem PDF zitierte Vorgabe.
 Die frühere Definition „LoanItem ordnet Drone einer Loan zu“ wird korrigiert:
 Im verbindlichen PDF liegt DroneId auf Loan; LoanItem enthält Type und Quantity.
 Damit stimmen Modell, Requirements und Projektkonfiguration überein.
+
+## Bestätigte Präzisierungen nach dem Spec-Review
+
+Am 12.11.2026 wurden die fünf zuvor offenen Fragen vom Benutzer entschieden.
+Die bisherigen offenen Punkte dokumentieren den PDF-Ausgangsstand. Verbindliche
+Präzisierungen und Szenarien stehen im vorhandenen Change
+[initial-drone-lending-system](../openspec/changes/initial-drone-lending-system/design.md):
+Namen außen trimmen und 1–100 Zeichen, doppelte Namen mit Id unterscheiden;
+automatische Kalendertage in Europe/Vienna, YYYY-MM-DD und ReturnDate null bei
+Active; erneute Rückgabe 409 ohne Änderungen; Fehlervertrag 400/404/409 mit
+Problem-JSON; Nullpositionen nicht speichern, fehlende Mengen als 0 anzeigen und
+doppelte Zubehörtypen ablehnen. Diese Ergänzungen stammen aus der bestätigten
+Review-Entscheidung, nicht aus zusätzlichen PDF-Vorgaben. Keine Funktion ist
+damit implementiert.
