@@ -403,3 +403,161 @@ Die Requirements sind noch nicht implementiert. Commit und Push veröffentlichen
 die Dokumentation einschließlich Original-PDF; eine Pull Request dient dem
 Review und wird nicht automatisch gemergt. Der Branch baut auf der vorherigen,
 noch offenen Einrichtungs-PR #1 auf; diese Abhängigkeit wird in der PR benannt.
+
+
+## 11. Schritt 8: vorhandenen OpenSpec-Change vervollständigen
+
+Am 12. November 2026 wurde auf dem bereits vorhandenen Branch
+`plan-initial-drone-lending-system` der bestehende Change
+`initial-drone-lending-system` vervollständigt. Zu Beginn enthielt er nur
+`.openspec.yaml`. Es wurde weder ein neuer Branch noch ein neuer Change angelegt.
+
+Die bereits lokal veränderte Projektauftrag-PDF wurde nicht überschrieben oder
+als Anforderungsquelle verwendet. Ihre SHA-256-Prüfsumme blieb
+`6691cb598df930ac473ec1f79178f9302d0596681b23aea58cf046e083258b3c`.
+Gelesen wurden `docs/requirements.md`, `docs/ddd.md`, `openspec/config.yaml`, die
+Projektgrundgerüste und das mit `git show HEAD:docs/source/INF4_SYP_19_Projektauftrag_Drohnenverwaltung.pdf`
+ausgelesene Original-PDF. Dessen SHA-256 entspricht weiterhin der in Abschnitt 10
+festgehaltenen Original-Prüfsumme; alle 43 Seiten wurden mit pdftotext gelesen.
+
+Erstellt wurden Proposal mit Motivation und Umfang, Design mit Architektur,
+Domänenmodell, SQLite-Konzept und begründeten Entscheidungen sowie drei Delta-
+Spezifikationen unter `specs/drone/`, `specs/student-group/` und `specs/loan/`.
+Sie übernehmen alle zehn REQ aus der dokumentierten Quelle. 14 Szenarien enthalten
+jeweils explizite GIVEN/WHEN/THEN-Schritte, einschließlich Konkurrenz,
+ungültiger Zubehörmengen, Rückgabe und erneuter Loan. Die 22 Tasks umfassen
+Backend, Frontend und Tests; jeder Task nennt REQ-Bezüge, Prüfung und erforderliche
+Voraussetzungen. Zwei Zuordnungstabellen dokumentieren REQ-001 bis REQ-010 und
+DR-01 bis DR-07. Alle 22 Checkboxen sind offen.
+
+Offen bleiben insbesondere Namensvalidierung, Datumsermittlung/-darstellung,
+Antworten bei wiederholter Rückgabe oder ungültigen Referenzen und die konkrete
+Darstellung von Nullmengen/mehrfachen Positionen. Diese Punkte sind vor den jeweils
+betroffenen Implementierungstasks zu entscheiden; fehlende Anforderungen wurden
+nicht stillschweigend ergänzt. Die Planung ist als Review-Grundlage vollständig,
+keine Freigabe zur ungeprüften Implementierung.
+
+Tatsächlich ausgeführte Prüfungen:
+
+- `openspec context --json` und `openspec list --json`: bestehende Projektwurzel
+  und bestehenden Change erkannt; `openspec list --specs`: noch keine Hauptspecs.
+- `openspec instructions` für proposal, specs, design und tasks gelesen; Artefakte
+  in Abhängigkeitsreihenfolge erstellt und Status dazwischen kontrolliert.
+- `openspec validate initial-drone-lending-system --strict`: erfolgreich.
+- `openspec validate --all --strict --no-interactive`: 1 bestanden, 0 fehlgeschlagen.
+- `openspec status --change initial-drone-lending-system`: 4/4 Planungsartefakte
+  vollständig. Diese Anzeige bezeichnet keine erledigten Umsetzungstasks.
+- `openspec doctor`: Projektwurzel erkannt; `openspec schema validate spec-driven`:
+  Schema gültig.
+- Zusätzliche Python-Strukturprüfung: genau drei Specs, zehn eindeutige REQ mit
+  SHALL, 14 Szenarien mit GIVEN/WHEN/THEN, 22 eindeutige offene Task-IDs mit
+  Prüfhinweis und REQ-Bezug; lokale und committed PDF-Prüfsummen bestätigt.
+- Fachliche Gegenprüfung der Specs gegen Requirements/DDD und Original-PDF sowie
+  der Zuordnung aller sieben Domain Rules durchgeführt.
+- `git diff`, `git status` und `git diff --check` geprüft; Formatprüfung erfolgreich.
+  Die neuen Dateien wurden zusätzlich über `git diff --no-index` gegen
+  `/dev/null` geprüft; ein Commit-Diff war wegen des Schreibschutzes nicht möglich. Keine Anwendungstests
+  ausgeführt, da nur Planungs- und Dokumentationsdateien geändert wurden.
+
+Die lesenden Abfragen `gh pr view 3` und `gh issue list` scheiterten am
+Netzwerkzugriff auf api.github.com. Der aktuelle Merge-Status von PR #3 und
+vorhandene Issue-Nummern konnten daher nicht verifiziert werden. Die drei
+GitHub-Workflow-Skills fehlen auf diesem Branch; die Planung hält dies als
+Voraussetzung für spätere Umsetzung fest. Es wurden keine Issues angelegt,
+keine Funktionen implementiert, keine Hauptspecs synchronisiert und nichts
+archiviert oder gemergt. Als Nächstes folgen das gemeinsame Spec-Review
+(Schritt 9) und die Task-Prüfung (Schritt 10 des PDF-Workflows).
+
+Veröffentlichungsgrenze dieses Laufs: Das explizite `git add` ausschließlich der
+sieben OpenSpec-Dateien (einschließlich der bestehenden Metadatei) und dieser
+Dokumentation scheiterte mit `Unable to create .git/index.lock: Read-only file
+system`. Es wurde nichts gestaged oder committed. Die PDF war nicht Teil der
+Dateiliste. Ohne Commit der Planung wurden Push und PR-Erstellung nicht
+angestoßen; es gibt keinen neuen PR-Link. Die fertigen Dateien bleiben im
+Arbeitsverzeichnis für einen späteren Commit erhalten. Weder Dateirechte noch
+Branch oder Checkout wurden geändert.
+
+## 12. Spec-Review entscheiden und Planung aktualisieren
+
+Am 12. November 2026 bestätigte der Benutzer alle fünf Empfehlungen aus dem
+Spec-Review unverändert und beauftragte die Aktualisierung sowie Veröffentlichung
+auf dem vorhandenen Branch `plan-initial-drone-lending-system` gegen `main`.
+Der Change bleibt `initial-drone-lending-system`; Anwendungscode wird nicht
+geändert, keine Issues werden angelegt und keine Tasks als erledigt markiert.
+
+Bestätigte Ergänzungen zum PDF-Ausgangsstand:
+
+1. Drone.Name und StudentGroup.Name sind Pflichtfelder. Äußere Leerzeichen werden
+   entfernt; danach sind 1–100 Zeichen zulässig, ohne besonderes Zeichenmuster.
+   Gleiche Namen sind erlaubt, Ids unterscheiden sie; Auswahl zeigt bei gleichen
+   Namen zusätzlich die Id.
+2. Das Backend ermittelt LoanDate und ReturnDate automatisch als Kalendertag in
+   Europe/Vienna. Keine manuelle Datumseingabe; API YYYY-MM-DD, ReturnDate null
+   bei Active. Rückgabe vor LoanDate wird mit 400 ohne Änderung abgelehnt.
+3. Erneute Rückgabe liefert 409 ohne Änderungen, auch wenn dieselbe Drone bereits
+   eine neue Active Loan besitzt. Das ursprüngliche ReturnDate bleibt erhalten.
+4. Fehlervertrag: 400 bei ungültigen Eingaben, 404 bei unbekannten Referenzen,
+   409 bei Loaned Drone oder Returned Loan. Einheitliches Problem-JSON mit
+   status/title/detail und bei Feldfehlern errors; technische Störungen werden
+   nicht pauschal als Fachkonflikt behandelt.
+5. Menge 0 ist gültig, wird aber nicht als Position gespeichert. Fehlende Typen
+   erscheinen als 0. Doppelte eingereichte Zubehörtypen werden auch mit Menge 0
+   mit 400 abgelehnt, ohne Summierung. Eine Loan ohne LoanItems ist gültig.
+
+Design, Proposal und die drei Delta-Specs sind abgeglichen. Requirements und DDD
+behalten die ursprüngliche Quellenanalyse und verweisen auf die bestätigten
+Präzisierungen im Change. Atomarität umfasst die vollständige Ablehnung einer
+ungültigen Loan, Rollback bei Speicherfehlern sowie unveränderte Daten bei einer
+fehlgeschlagenen Rückgabe. Zwei gleichzeitige gültige Loan-Anfragen für dieselbe
+verfügbare Drone ergeben ohne unabhängige technische Störung genau einen Erfolg,
+eine Antwort 409 und keine Teilpositionen des Verlierers.
+
+Die Liste umfasst jetzt **25 offene Tasks** statt 22. Bestehende IDs bleiben
+stabil: 1.1 wurde auf Einrichtung, Schema (1.3) und Uhr/Fehlervertrag (1.4)
+verteilt. 3.2 liefert die Validierung vor der ersten Loan-Operation 3.1; deren
+API-Tests prüfen die vollständige Durchsetzung. 3.6 ergänzt den Rollback-Nachweis.
+2.5 hängt nun auch von 2.4 ab. 6.1 setzt sämtliche Tasks der Gruppen 1–5 voraus,
+inklusive Konkurrenz- und Rollback-Prüfung; 6.2 folgt danach. Alle zehn REQs und
+alle sieben Domain Rules bleiben in den Zuordnungstabellen abgedeckt.
+
+`openspec/config.yaml` enthielt noch den früheren Auftrag „ausschließlich
+Requirements- und DDD-Dokumentation, keinen Change vorschlagen“. Dieser Abschnitt
+wurde auf die aktuelle Planungs-/Review-Phase des bestehenden Changes angepasst.
+Architektur, Fachregeln und ausgeschlossener Funktionsumfang bleiben erhalten.
+
+Tatsächliche Prüfungen dieses Aktualisierungslaufs:
+
+- `gh pr view 3 --json number,state,mergedAt,url,title` mit freigegebenem
+  Netzwerkzugriff: **MERGED**, Merge-Zeit **2026-11-12T13:40:24Z**;
+  [PR #3](https://github.com/FeReiter/drone-inventory/pull/3). Kein Merge durch
+  diesen Lauf. Die Skills fehlen auf dem älteren Planungsbranch noch; vor einer
+  Implementierung ist der aktuelle main-Stand zu integrieren.
+- `git fetch origin main` scheiterte auch außerhalb der Sandbox an der bestehenden,
+  einem anderen Benutzer gehörenden `.git/FETCH_HEAD`. Die anschließende Variante
+  `git fetch --no-write-fetch-head origin main` war erfolgreich; keine Dateirechte
+  geändert und FETCH_HEAD nicht überschrieben. origin/main wurde auf a98abb3
+  aktualisiert; kein Merge oder Rebase des Planungsbranches vorgenommen.
+- Die erste strikte Validierung beanstandete zu lange Anforderungseinleitungen.
+  Nach Gliederung der Detailregeln bei den zugehörigen Szenarien:
+  `openspec validate initial-drone-lending-system --strict` erfolgreich ohne
+  Warnungen; `openspec validate --all --strict --no-interactive`: **1 bestanden,
+  0 fehlgeschlagen**.
+- Python-Strukturprüfung erfolgreich: drei Specs, zehn eindeutige REQ-Abschnitte,
+  29 Szenarien mit GIVEN/WHEN/THEN, 25 eindeutige offene Task-IDs, Prüfhinweise
+  und REQ-Bezüge in allen Tasks, Abhängigkeiten in Ausführungsreihenfolge und
+  Zuordnungstabellen für DR-01 bis DR-07.
+- Fachlicher Abgleich der Szenarien und Tasks: Namensgrenzen, ungültige
+  Referenzen, Zubehörmengen/-typen, Nullpositionen, doppelte Typen, erneute
+  Rückgabe, Datumsgrenzen, Atomarität und Konkurrenz sind als Prüfungen geplant.
+- `git diff --check`: erfolgreich. Anwendungs-Builds und Anwendungstests wurden
+  für diese reine Planungsänderung nicht ausgeführt; die geplanten Fachtests
+  sind damit ausdrücklich noch nicht bestanden.
+- Die SHA-256-Prüfsumme der lokalen PDF wurde vor und nach der Bearbeitung
+  verglichen: unverändert gegenüber Abschnitt 11. Sie wird weder gestaged noch
+  committed. Der Commit umfasst ausschließlich OpenSpec-Planung und zugehörige
+  Textdokumente; der gestagte Diff wird vor dem Commit nochmals geprüft.
+
+Die Veröffentlichung erfolgt als Planungs-PR gegen main ohne automatische
+Zusammenführung. Keine Hauptspecs werden synchronisiert und nichts archiviert;
+die spätere Implementierung benötigt weiterhin ihre Issue-Zuordnung und den
+vorgeschriebenen Task-/Branch-/PR-Workflow.
