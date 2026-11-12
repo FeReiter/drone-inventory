@@ -712,3 +712,108 @@ aus einem isolierten lokalen Clone unter /tmp/drone-plan-publish-20261112
 veröffentlicht. Der Clone enthält die committed Original-PDF; die lokal
 veränderte PDF wird nicht kopiert. Der main-Abgleich wird dort mit den
 geprüften Textdateien abgeschlossen. Keine Dateirechte wurden verändert.
+
+
+## 14. Schritt 9: OpenSpec-Tasks nach GitHub übertragen
+
+Am 12.11.2026 wurde auf ausdrücklichen Auftrag der Skill
+`.github/skills/openspec-to-github/SKILL.md` für den bestehenden Change
+`initial-drone-lending-system` ausgeführt. Die Bezeichnung Schritt 9 folgt dem
+aktuellen Arbeitsauftrag; der PDF-Leitfaden bezeichnet den Issue-Export als
+Schritt 11. Es wurden keine Fachfunktionen implementiert.
+
+### Sicherung und Synchronisierung
+
+Vor jedem Schreibzugriff wurden Status, lokale Branches und origin/main geprüft.
+Neun uncommittete Dateien wurden mit Verzeichnispfaden unter
+`/tmp/drone-inventory-backup-20261112-154431/files/` gesichert und per SHA-256
+verglichen. Zusätzlich enthält die Sicherung staged.patch, unstaged.patch,
+Git-Status, Index und Merge-Metadaten. Die vorhandenen Änderungen und der bereits
+begonnene Merge im ursprünglichen Checkout wurden nicht verworfen oder beendet.
+Die lokal geänderte PDF bleibt dort erhalten; ihr SHA-256 ist weiterhin
+6691cb598df930ac473ec1f79178f9302d0596681b23aea58cf046e083258b3c.
+Die Sicherung unter /tmp ist eine zusätzliche lokale Kopie, kein dauerhaftes Archiv.
+
+`git fetch --no-write-fetch-head origin main` war erfolgreich. PR #4 ist laut
+GitHub seit 2026-11-12T14:42:44Z gemergt. Der lokale, nicht ausgecheckte main
+wurde auf origin/main, d97bfce2efda722de38e4e17019aaabe18c0d75a, gesetzt.
+Der Ref-Schreibzugriff erforderte wegen der Sandbox eine Freigabe; anschließend
+stimmten beide Commit-IDs überein. Alle neun gesicherten Arbeitsdateien sind
+nachweislich unverändert. Ein Branch-Wechsel im ursprünglichen Checkout wurde
+vermieden. Im isolierten Checkout `/tmp/drone-issues-step9` wurde main per
+Fast-forward auf denselben Commit synchronisiert und der neue Branch
+`docs/openspec-task-issues` angelegt. Die drei Workflow-Skills sowie 26 offene
+Tasks wurden dort bestätigt; die veränderte PDF wurde nicht kopiert.
+
+### Issue-Export und Project
+
+Requirements, DDD, config.yaml, Proposal, Design, drei Delta-Specs und die
+vollständige Task-Datei wurden gelesen; der committed Projektauftrag wurde mit
+pdftotext ausgewertet. Es existieren noch keine Hauptspecs. GitHub-Repository
+FeReiter/drone-inventory, Anmeldung mit repo-/project-Rechten, Project Nr. 1
+„Drone Inventory“ sowie Backlog, Ready, In Progress, Review und Done wurden
+verifiziert. Der ausdrückliche aktuelle Auftrag erlaubt den Issue-Export trotz
+der früheren, auf die reine Planungsphase beschränkten Nicht-Erstellen-Hinweise.
+
+Die REST-Abfrage aller offenen und geschlossenen Einträge wurde vollständig
+paginiert; Pull Requests wurden ausgeschlossen. Vorher gab es keine Issues.
+26 Issues wurden neu erstellt, keine wiederverwendet. Jeder Body enthält den
+stabilen Schlüssel aus Repository, Change und Task-ID, den unveränderten
+Taskumfang mit Abhängigkeiten, REQ-Bezüge und Links zu den passenden
+Spec-Anforderungen, Proposal, Design, Akzeptanzkriterien und Testhinweise.
+Die Nummer wurde jeweils unmittelbar nach erfolgreicher Erstellung in tasks.md
+und zusätzlich in einem lokalen Exportprotokoll gespeichert. Anschließend wurde
+das Issue zum bestehenden Project hinzugefügt und auf Backlog gesetzt.
+
+| OpenSpec-Task | GitHub Issue | Project-Status |
+| --- | --- | --- |
+| 1.1 | [#5](https://github.com/FeReiter/drone-inventory/issues/5) | Backlog |
+| 1.3 | [#6](https://github.com/FeReiter/drone-inventory/issues/6) | Backlog |
+| 1.2 | [#7](https://github.com/FeReiter/drone-inventory/issues/7) | Backlog |
+| 1.4 | [#8](https://github.com/FeReiter/drone-inventory/issues/8) | Backlog |
+| 2.1 | [#9](https://github.com/FeReiter/drone-inventory/issues/9) | Backlog |
+| 2.2 | [#10](https://github.com/FeReiter/drone-inventory/issues/10) | Backlog |
+| 2.3 | [#11](https://github.com/FeReiter/drone-inventory/issues/11) | Backlog |
+| 2.4 | [#12](https://github.com/FeReiter/drone-inventory/issues/12) | Backlog |
+| 2.5 | [#13](https://github.com/FeReiter/drone-inventory/issues/13) | Backlog |
+| 2.6 | [#14](https://github.com/FeReiter/drone-inventory/issues/14) | Backlog |
+| 3.2 | [#15](https://github.com/FeReiter/drone-inventory/issues/15) | Backlog |
+| 3.1 | [#16](https://github.com/FeReiter/drone-inventory/issues/16) | Backlog |
+| 3.3 | [#17](https://github.com/FeReiter/drone-inventory/issues/17) | Backlog |
+| 3.6 | [#18](https://github.com/FeReiter/drone-inventory/issues/18) | Backlog |
+| 3.4 | [#19](https://github.com/FeReiter/drone-inventory/issues/19) | Backlog |
+| 3.5 | [#20](https://github.com/FeReiter/drone-inventory/issues/20) | Backlog |
+| 4.1 | [#21](https://github.com/FeReiter/drone-inventory/issues/21) | Backlog |
+| 4.2 | [#22](https://github.com/FeReiter/drone-inventory/issues/22) | Backlog |
+| 5.1 | [#23](https://github.com/FeReiter/drone-inventory/issues/23) | Backlog |
+| 5.6 | [#24](https://github.com/FeReiter/drone-inventory/issues/24) | Backlog |
+| 5.2 | [#25](https://github.com/FeReiter/drone-inventory/issues/25) | Backlog |
+| 5.3 | [#26](https://github.com/FeReiter/drone-inventory/issues/26) | Backlog |
+| 5.4 | [#27](https://github.com/FeReiter/drone-inventory/issues/27) | Backlog |
+| 5.5 | [#28](https://github.com/FeReiter/drone-inventory/issues/28) | Backlog |
+| 6.1 | [#29](https://github.com/FeReiter/drone-inventory/issues/29) | Backlog |
+| 6.2 | [#30](https://github.com/FeReiter/drone-inventory/issues/30) | Backlog |
+
+### Tatsächliche Prüfungen
+
+- Erneute vollständige Abfrage offener/geschlossener Issues: für jede der 26
+  Task-IDs exakt ein passendes offenes Issue, keine doppelten Schlüssel oder
+  mehrfach verwendeten Issue-Nummern.
+- Project-Einträge erneut gelesen; vollständige Ergebnismenge anhand totalCount
+  geprüft. Alle 26 verknüpften Issues sind genau einmal im Project auf Backlog.
+- Task-Zuordnungsprüfung: 26/26 verknüpft, alle Checkboxen offen. Die ursprünglichen
+  Tasktexte bleiben abgesehen vom angehängten GitHub-Verweis unverändert.
+- `openspec list`, `status` und `instructions apply` bestätigen den bestehenden
+  Change mit vollständiger Planung und 0/26 erledigten Tasks. Apply wurde nur
+  zur Statusprüfung gelesen; keine Implementierung gestartet.
+- Strikte Change-Validierung und strikte Gesamtvalidierung erfolgreich;
+  Gesamtvalidierung: 1 bestanden, 0 fehlgeschlagen.
+- `git diff` geprüft; `git diff --check` und `git diff --cached --check` erfolgreich.
+  Der Commit enthält ausschließlich tasks.md und diese Dokumentation.
+- Keine Anwendungstests ausgeführt: Dieser Schritt ändert nur Aufgabenverweise
+  und Textdokumentation. Akzeptanzkriterien der Issues sind geplante Prüfungen,
+  keine bereits bestandenen Fachtests.
+
+Veröffentlichung auf dem neuen Dokumentationsbranch mit PR gegen main.
+Kein automatischer Merge, kein Schließen von Issues, keine erledigten Tasks,
+keine Archivierung und keine Änderung von Anwendungscode oder PDF.
