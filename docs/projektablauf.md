@@ -405,7 +405,117 @@ Review und wird nicht automatisch gemergt. Der Branch baut auf der vorherigen,
 noch offenen Einrichtungs-PR #1 auf; diese Abhängigkeit wird in der PR benannt.
 
 
-## 11. Schritt 8: vorhandenen OpenSpec-Change vervollständigen
+## 11. Drei GitHub-Workflow-Skills erstellen
+
+Am 11.11.2026 wurden die drei Anleitungen unter `.github/skills/` ergänzt.
+Grundlage sind der Projektauftrag unter `docs/source/` (insbesondere PDF-Seiten
+28 und 32–36 sowie die Spielregeln auf Seite 39), `docs/requirements.md`,
+`docs/ddd.md`, `AGENTS.md` und `openspec/config.yaml`. Die Einrichtung selbst
+erstellt keine Issues oder OpenSpec-Changes und implementiert keine REQ.
+
+Der neue Branch `docs-github-workflow-skills` basiert auf dem zu Beginn aktuell
+abgerufenen `origin/main`, Commit `16bf8a5a40da1bf6ad41ece3eb398298da280760`.
+Backend, Frontend und bestehende OpenSpec-Integration bleiben unverändert.
+Der ursprünglich vorgesehene Branchname unter `docs/` war durch fremdbesessene
+lokale Git-Verzeichnisse gesperrt; deshalb wurde ein eindeutiger Name ohne
+diesen Verzeichnisprefix gewählt. Der Abruf erfolgte mit
+`git fetch --no-write-fetch-head origin main`, da `.git/FETCH_HEAD` ebenfalls
+einem anderen lokalen Benutzer gehört. Bestehende Dateirechte wurden nicht geändert.
+Auch der Commit scheiterte an fremdbesessenen Verzeichnissen in `.git/objects`.
+Die Rechtekorrektur war ohne lokale sudo-Authentifizierung nicht möglich.
+Commit und Veröffentlichung erfolgen deshalb aus einem isolierten Checkout unter
+`/tmp` mit denselben vier geprüften Dateien und derselben main-Basis.
+
+### Entscheidungen und Verhalten
+
+| Skill | Aufgabe | Wesentliche Grenze |
+| --- | --- | --- |
+| `openspec-to-github` | Pro geprüftem Task ein Issue zuordnen, ins Project aufnehmen und Nummer in der Task-Datei sichern | Erstellung nur auf ausdrücklichen Auftrag; offene und geschlossene Issues vollständig auf Duplikate prüfen |
+| `openspec-apply-with-github` | Genau ein Issue auf eigenem Branch umsetzen, Tests und Diff prüfen, PR gegen main erstellen | Keine weiteren Tasks, kein Merge, kein vorzeitiges Done |
+| `openspec-archive-with-github` | Tasks, Testnachweise, gemergte PRs und integrierte Commits prüfen, dann Specs aktualisieren und archivieren | Fehlende Belege oder offene Arbeit blockieren die Archivierung |
+
+Die Zuordnung verwendet Change-Name und Task-ID; eine REQ allein ist kein
+Task-Schlüssel. Wiederholungen verwenden vorhandene Issues und Project-Einträge.
+Bei Teilfehlern werden bereits erzeugte Nummern gesichert und vor einem erneuten
+Versuch abgeglichen. Bestehende Checkboxen bleiben beim Übertragen unverändert.
+Der Apply-Skill hakt nur den vollständig umgesetzten und erfolgreich geprüften
+Task ab. Der Archive-Skill prüft zusätzlich den Merge; eine Checkbox oder ein
+geschlossenes Issue genügt nicht. Tests ohne tatsächlich ausgeführte Testfälle
+gelten nicht als Nachweis. Project-Statuswerte werden aktuell ausgelesen.
+
+Die generierte Apply-Anleitung wird auf einen Task begrenzt. Beim Archivieren
+gelten strengere Abschlussbedingungen als die generierte Anleitung erlaubt:
+keine Ausnahme für offene Tasks, keine Umgehung der Validierung. Die Archivierung
+verwendet den installierten CLI-Befehl mit Spec-Aktualisierung anstelle eines
+manuellen Verschiebens. Die Archivierungsänderung erhält eine eigene PR;
+auch diese wird nicht automatisch gemergt.
+
+### Kompatibilität und Aufruf
+
+Geprüfte lokale Versionen: **codex-cli 0.159.2**, **OpenSpec 1.16.0** und
+**gh 2.102.1**. Die Skills haben YAML-Frontmatter mit `name` und `description`.
+Es sind Anleitungen für den Agenten, keine GitHub Actions oder OpenSpec-Befehle.
+
+Die [offizielle Codex-Dokumentation](https://learn.chatgpt.com/docs/build-skills)
+beschreibt `.agents/skills/` als Repository-Suchpfad und `$skill-name` bzw.
+`/skills` als Codex-Aufruf. Die im Projektauftrag gezeigten Slash-Aufrufe sind
+deshalb nicht unverändert als Codex-Kommandos vorauszusetzen. Die verlangte
+Ablage `.github/skills/` wurde beibehalten. Die lokale Diagnose
+`codex debug prompt-input` bestätigt: Die drei neuen Skills erscheinen dort
+nicht im automatisch geladenen Skill-Katalog, `openspec-apply-change` dagegen
+schon. Der Diagnoseaufruf erforderte außerhalb der Sandbox Zugriff auf die
+lokale Codex-Laufzeit; es wurde kein Modelllauf zur Umsetzung gestartet.
+
+**Sofort nutzbar im Codex-Chat**, aus dem Repository-Stamm:
+
+```text
+Lies .github/skills/openspec-to-github/SKILL.md und führe ihn für Change <change> aus. Erstelle die fehlenden Issues und übertrage sie ins Project.
+
+Lies .github/skills/openspec-apply-with-github/SKILL.md und bearbeite ausschließlich Issue #<nummer> nach diesem Skill.
+
+Lies .github/skills/openspec-archive-with-github/SKILL.md und prüfe Change <change>. Archiviere ihn nur, wenn alle Abschlussbedingungen erfüllt sind.
+```
+
+`<change>` und `<nummer>` werden später durch tatsächliche Werte ersetzt.
+Diese Beispiele wurden bei der Einrichtung nicht ausgeführt. Wer Kurzaufrufe
+nutzen möchte, kann die drei Skill-Ordner zusätzlich unter `.agents/skills/`
+verlinken (relative Ziele: `../../.github/skills/<skill-name>`), danach die
+Erkennung in `/skills` prüfen und gegebenenfalls Codex neu starten. Erst bei
+bestätigter Erkennung sind `$openspec-to-github <change>`,
+`$openspec-apply-with-github` mit Issue-Nummer im Prompt und
+`$openspec-archive-with-github <change>` sinnvoll. Solche Links wurden hier
+nicht angelegt; es gibt keine zweite zu pflegende Kopie der Anleitungen.
+
+### Prüfergebnisse und Grenzen
+
+- Alle drei Skills bestehen `quick_validate.py` aus dem installierten
+  `skill-creator` (`Skill is valid!`). Geprüft sind Frontmatter und Skill-Struktur.
+- Die lokalen Hilfen bestätigen `openspec instructions` für apply/archive,
+  `status`, `list`, strikte Validierung sowie `archive` mit Spec-Aktualisierung
+  und `validate --archived`. Die vorhandenen generierten Skills stammen aus 1.16.0.
+- `gh project item-add --help` und `item-edit --help` bestätigen die verwendete
+  Syntax einschließlich Statusänderung über Projekt, Issue-URL, Feld und Wert.
+- Lesende GitHub-Abfragen bestätigen FeReiter/Project Nr. 1 „Drone Inventory“,
+  privat und geöffnet, ohne Einträge, mit Backlog, Ready, In Progress, Review,
+  Done. Es wurden keine Project-Daten verändert.
+- `openspec doctor` erkennt die Projektwurzel; `openspec schema validate
+  spec-driven` ist erfolgreich. `openspec list --json` enthält keine Changes.
+  `openspec validate --all --strict --no-interactive` meldet
+  `No items found to validate.`, `openspec validate --archived --no-interactive`
+  meldet `No archived changes found.` Das belegt keine fachliche Umsetzung.
+- Die Abläufe wurden anhand des Projektauftrags und der generierten Skills
+  inhaltlich geprüft: Wiederholung und Teilfehler beim Export, Scope-Grenze beim
+  Apply, offene/ungemergte PRs und fehlende Tests beim Archivieren. Es wurde
+  kein vollständiger GitHub-Schreiblauf der Skills durchgeführt, um die Vorgabe
+  ohne Issues und Changes einzuhalten. Schreibrechte wurden damit nicht praktisch getestet.
+- Vollständiger Diff und `git diff --check` werden vor dem Commit geprüft.
+  Anwendungstests sind für diese reine Anleitungsänderung nicht erforderlich.
+
+Die Änderungen werden als Commit und Push veröffentlicht und in einer Pull
+Request gegen `main` zur Prüfung bereitgestellt. Ein Merge erfolgt nicht automatisch.
+
+
+## 12. Schritt 8: vorhandenen OpenSpec-Change vervollständigen
 
 Am 12. November 2026 wurde auf dem bereits vorhandenen Branch
 `plan-initial-drone-lending-system` der bestehende Change
@@ -477,7 +587,7 @@ angestoßen; es gibt keinen neuen PR-Link. Die fertigen Dateien bleiben im
 Arbeitsverzeichnis für einen späteren Commit erhalten. Weder Dateirechte noch
 Branch oder Checkout wurden geändert.
 
-## 12. Spec-Review entscheiden und Planung aktualisieren
+## 13. Spec-Review entscheiden und Planung aktualisieren
 
 Am 12. November 2026 bestätigte der Benutzer alle fünf Empfehlungen aus dem
 Spec-Review unverändert und beauftragte die Aktualisierung sowie Veröffentlichung
@@ -530,13 +640,13 @@ Tatsächliche Prüfungen dieses Aktualisierungslaufs:
 - `gh pr view 3 --json number,state,mergedAt,url,title` mit freigegebenem
   Netzwerkzugriff: **MERGED**, Merge-Zeit **2026-11-12T13:40:24Z**;
   [PR #3](https://github.com/FeReiter/drone-inventory/pull/3). Kein Merge durch
-  diesen Lauf. Die Skills fehlen auf dem älteren Planungsbranch noch; vor einer
-  Implementierung ist der aktuelle main-Stand zu integrieren.
+  diesen Lauf. Die Skills waren auf dem älteren Planungsbranch noch nicht vorhanden; sie wurden
+  beim anschließenden Abgleich mit main unverändert übernommen.
 - `git fetch origin main` scheiterte auch außerhalb der Sandbox an der bestehenden,
   einem anderen Benutzer gehörenden `.git/FETCH_HEAD`. Die anschließende Variante
   `git fetch --no-write-fetch-head origin main` war erfolgreich; keine Dateirechte
   geändert und FETCH_HEAD nicht überschrieben. origin/main wurde auf a98abb3
-  aktualisiert; kein Merge oder Rebase des Planungsbranches vorgenommen.
+  aktualisiert. Der anschließende Abgleich des Planungsbranches ist unten dokumentiert.
 - Die erste strikte Validierung beanstandete zu lange Anforderungseinleitungen.
   Nach Gliederung der Detailregeln bei den zugehörigen Szenarien:
   `openspec validate initial-drone-lending-system --strict` erfolgreich ohne
@@ -553,7 +663,7 @@ Tatsächliche Prüfungen dieses Aktualisierungslaufs:
   für diese reine Planungsänderung nicht ausgeführt; die geplanten Fachtests
   sind damit ausdrücklich noch nicht bestanden.
 - Die SHA-256-Prüfsumme der lokalen PDF wurde vor und nach der Bearbeitung
-  verglichen: unverändert gegenüber Abschnitt 11. Sie wird weder gestaged noch
+  verglichen: unverändert gegenüber Abschnitt 12. Sie wird weder gestaged noch
   committed. Der Commit umfasst ausschließlich OpenSpec-Planung und zugehörige
   Textdokumente; der gestagte Diff wird vor dem Commit nochmals geprüft.
 
@@ -561,3 +671,44 @@ Die Veröffentlichung erfolgt als Planungs-PR gegen main ohne automatische
 Zusammenführung. Keine Hauptspecs werden synchronisiert und nichts archiviert;
 die spätere Implementierung benötigt weiterhin ihre Issue-Zuordnung und den
 vorgeschriebenen Task-/Branch-/PR-Workflow.
+
+Abgleich vor Veröffentlichung: Nach dem Planungscommit cdf572b wurde origin/main
+(a98abb3) in den bestehenden Planungsbranch integriert. Nur die gleichzeitig
+erweiterte `docs/projektablauf.md` hatte einen Konflikt. Beide Einträge wurden
+vollständig erhalten und die neuen Abschnitte fortlaufend nummeriert. Die drei
+Workflow-Skills aus PR #3 wurden unverändert übernommen. main und PR #3 wurden
+dabei nicht verändert. Gegen main enthält der Planungs-PR ausschließlich die
+elf Planungs-/Textdateien. Die lokale PDF bleibt unverändert und uncommitted.
+Strikte Change-/Gesamtvalidierung sowie `git diff --check` und
+`git diff --cached --check` wurden nach Auflösung erneut erfolgreich ausgeführt.
+
+
+### Abschließende Gegenprüfung und Ergänzung
+
+Die erneute GitHub-Abfrage bestätigt PR #3 weiterhin als MERGED mit
+mergedAt 2026-11-12T13:40:24Z. Der bereits vorbereitete Merge von main liegt
+lokal mit aufgelösten Konflikten vor und wird mit der Planung abgeschlossen.
+
+Ein explizites Szenario für zwei gleichzeitige Rückgaben ergänzt REQ-008.
+Task 5.6 trennt den übergreifenden Rückgabe-Rollback- und Konkurrenznachweis
+von der Rückgabeoperation 5.1. Der endgültige Stand umfasst **26 offene Tasks**
+und **30 Szenarien**; keine Checkbox wurde abgehakt. Alle zehn REQs und sieben
+Domain Rules sind weiterhin zugeordnet. Die vorhandene config.yaml passt nach
+der bereits enthaltenen Phasenanpassung; keine weitere Änderung erforderlich.
+
+Erneut tatsächlich ausgeführt: strikte Change-Validierung erfolgreich;
+`openspec validate --all --strict --no-interactive`: 1 bestanden, 0 fehlgeschlagen.
+Python-Strukturprüfung: drei Specs, zehn eindeutige REQs, 30 Szenarien mit
+GIVEN/WHEN/THEN, 26 eindeutige offene Tasks mit Prüfhinweisen/REQ-Bezügen,
+Abhängigkeiten in Ausführungsreihenfolge und sieben DR-Zuordnungen bestätigt.
+`git diff --check` und `git diff --cached --check` erfolgreich; Diffs geprüft.
+Die PDF-Prüfsumme ist weiterhin
+6691cb598df930ac473ec1f79178f9302d0596681b23aea58cf046e083258b3c.
+Keine Anwendungstests ausgeführt, kein Anwendungscode geändert.
+
+Veröffentlichung: Staging scheiterte erneut am fremdbesessenen .git/objects,
+auch außerhalb der Sandbox. Deshalb wird derselbe vorhandene Planungsbranch
+aus einem isolierten lokalen Clone unter /tmp/drone-plan-publish-20261112
+veröffentlicht. Der Clone enthält die committed Original-PDF; die lokal
+veränderte PDF wird nicht kopiert. Der main-Abgleich wird dort mit den
+geprüften Textdateien abgeschlossen. Keine Dateirechte wurden verändert.

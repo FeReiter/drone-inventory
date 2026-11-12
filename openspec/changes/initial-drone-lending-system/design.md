@@ -144,7 +144,7 @@ PDF-Beispielen abgeleiteten zusätzlichen Vorgaben.
 - Historische Anzeigen referenzieren Drone und StudentGroup → derzeit sind
   Änderungen/Löschungen nicht beauftragt; spätere Änderungen benötigen eine
   eigene Entscheidung zum Erhalt historischer Bezeichnungen.
-- PR #3 ist laut GitHub seit 12.11.2026 13:40:24 UTC gemergt. Die Skills fehlen noch auf diesem älteren Planungsbranch; vor Implementierung den dann aktuellen main-Stand integrieren und vorhandene Issues zuordnen, keine Nummern erfinden.
+- PR #3 ist laut GitHub seit 12.11.2026 13:40:24 UTC gemergt. Die Skills wurden aus main unverändert übernommen; vor Implementierung vorhandene Issues zuordnen, keine Nummern erfinden.
 - Lokale .NET-Runtime war laut Projektablauf unvollständig → vor Backend-Tests
   vollständige ASP.NET-Core-10-Laufzeit sicherstellen; hier keine Reparatur.
 

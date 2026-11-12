@@ -57,9 +57,8 @@ Rückgabe als Konflikt, HTTP-Fehlervertrag und normalisierte Zubehörpositionen.
 Design und Specs halten diese Ergänzungen getrennt von den PDF-Vorgaben fest.
 
 PR #3 ist laut GitHub seit 12.11.2026 um 13:40:24 UTC gemergt:
-https://github.com/FeReiter/drone-inventory/pull/3 . Die drei Workflow-Skills fehlen
-noch auf diesem älteren Planungsbranch; vor Implementierung aktuellen main-Stand
-integrieren. Issue-Zuordnungen sind noch nicht verifiziert und vor Implementierung
+https://github.com/FeReiter/drone-inventory/pull/3 . Die drei Workflow-Skills wurden beim Abgleich des Planungsbranches mit
+main unverändert übernommen. Issue-Zuordnungen sind noch nicht verifiziert und vor Implementierung
 nachzuführen. Es werden keine Nummern erfunden und keine Issues angelegt.
 
 ## Out of Scope

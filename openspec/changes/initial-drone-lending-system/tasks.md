@@ -2,13 +2,13 @@
 
 Alle Tasks sind geplant und unimplementiert. Vor jedem Implementierungstask
 werden vorhandene Issues gelesen und zugeordnet; hier werden keine Issues
-angelegt oder Nummern erfunden. PR #3 ist gemergt; vor Implementierung den
-aktuellen main-Stand mit den Workflow-Skills integrieren. Je Task eigener Branch
+angelegt oder Nummern erfunden. PR #3 ist gemergt; die Workflow-Skills wurden beim Abgleich mit main
+unverändert übernommen. Je Task eigener Branch
 und eigene PR, passende Tests, git diff und git diff --check sowie Dokumentation.
 
 Bestehende Task-IDs bleiben stabil. 1.1 wurde in Einrichtung (1.1), Schema (1.3)
 und Uhr/Fehlervertrag (1.4) zerlegt. 3.2 liefert die Eingabevalidierung vor 3.1;
-3.6 ergänzt den übergreifenden Rollback-Nachweis. Die Reihenfolge unten ist eine
+3.6 ergänzt den übergreifenden Rollback-Nachweis; 5.6 prüft Rückgabe-Rollback und konkurrierende Rückgaben separat. Die Reihenfolge unten ist eine
 mögliche Ausführungsreihenfolge; maßgeblich sind die expliziten Abhängigkeiten.
 Jeder Funktionstask enthält eigene Tests. Alle neuen Negativszenarien sind Teil
 der betroffenen Funktionstasks, keine erst am Projektende nachgeholten Prüfungen.
@@ -45,7 +45,8 @@ der betroffenen Funktionstasks, keine erst am Projektende nachgeholten Prüfunge
 
 ## 5. Rückgabe und Historie
 
-- [ ] 5.1 Backend-Rückgabe mit dauerhafter Speicherung von ReturnDate bereitstellen (REQ-008, REQ-009; nach 4.1). Prüfung: API-/SQLite-Test ändert Active zu Returned, speichert ReturnDate und erhält LoanDate, Zuordnungen und LoanItems; Drone ist Available. Uhrgesteuerte API-Tests prüfen Europe/Vienna/Datumsformat, ReturnDate vor LoanDate mit 400, unbekannte Loan mit 404, erneute Rückgabe mit 409 (mit und ohne neue aktive Loan derselben Drone). Fehler lassen Status, Daten, LoanItems und neue Loan unverändert; auch Speicherfehler darf keine teilweise Rückgabe erzeugen. Endpunkt dokumentieren.
+- [ ] 5.1 Backend-Rückgabe mit dauerhafter Speicherung von ReturnDate bereitstellen (REQ-008, REQ-009; nach 4.1). Prüfung: API-/SQLite-Test ändert Active zu Returned, speichert ReturnDate und erhält LoanDate, Zuordnungen und LoanItems; Drone ist Available. Uhrgesteuerte API-Tests prüfen Europe/Vienna/Datumsformat, ReturnDate vor LoanDate mit 400, unbekannte Loan mit 404, erneute Rückgabe mit 409 (mit und ohne neue aktive Loan derselben Drone). Fehler lassen Status, Daten, LoanItems und neue Loan unverändert; Endpunkt dokumentieren. Übergreifende Fehler- und Konkurrenzprüfung folgt in 5.6.
+- [ ] 5.6 Atomarität und Konkurrenz der Rückgabe mit echter SQLite-Datei absichern (REQ-008, REQ-009; nach 5.1). Prüfung: zwei gleichzeitige Rückgaben über getrennte Verbindungen ergeben ohne unabhängige technische Störung genau einen Erfolg und einmal 409; ReturnDate wird nicht überschrieben. Speicherfehler nach Beginn der Rückgabe provozieren und nach erneutem Öffnen unveränderte Active Loan, ReturnDate null, LoanItems und Loaned Drone nachweisen. Technische Störungen nicht als fachlichen 409 behandeln. Testablauf dokumentieren.
 - [ ] 5.2 Backend-Historienabfrage bereitstellen (REQ-010; nach 5.1). Prüfung: API-Test zeigt Returned Loans mit Zuordnungen, beiden Daten und unveränderten Zubehörmengen nach erneutem Öffnen der SQLite-Datei; fehlende Typen als 0 anzeigen. Endpunkt dokumentieren.
 - [ ] 5.3 Angular-Rückgabeaktion umsetzen (REQ-008, REQ-009; nach 5.1, 4.2). Prüfung: HTTP-Komponententest löst Rückgabe aus, entfernt erfolgreiche Rückgabe aus aktiven Loans, lädt Drone-Verfügbarkeit neu und zeigt 400/404/409 verständlich, ohne bei Fehlern die Loan als erfolgreich zurückgegeben darzustellen. Keine manuelle Datumseingabe. Bedienung dokumentieren.
 - [ ] 5.4 Angular-Historie umsetzen (REQ-010; nach 5.2, 5.3). Prüfung: Komponententest zeigt dieselbe zurückgegebene Loan mit StudentGroup, Drone, Status, LoanDate, ReturnDate und Zubehörmengen; erneutes Laden erhält die Anzeige. Bedienung dokumentieren.
@@ -53,7 +54,7 @@ der betroffenen Funktionstasks, keine erst am Projektende nachgeholten Prüfunge
 
 ## 6. Gesamtablauf prüfen
 
-- [ ] 6.1 Browser-/API-Gesamtablauf gegen temporäres SQLite prüfen (REQ-001 bis REQ-010; nach sämtlichen Tasks der Gruppen 1–5 einschließlich 3.3 und 3.6). Prüfung: TELLO-07 und Group 3 anlegen, 4 Battery/8 Propeller ausleihen, zweiten Versuch ablehnen, aktive Liste prüfen, zurückgeben und nach erneutem Laden Historie sowie Verfügbarkeit prüfen; Ergebnis dokumentieren.
+- [ ] 6.1 Browser-/API-Gesamtablauf gegen temporäres SQLite prüfen (REQ-001 bis REQ-010; nach sämtlichen Tasks der Gruppen 1–5 einschließlich 3.3, 3.6 und 5.6). Prüfung: TELLO-07 und Group 3 anlegen, 4 Battery/8 Propeller ausleihen, zweiten Versuch ablehnen, aktive Liste prüfen, zurückgeben und nach erneutem Laden Historie sowie Verfügbarkeit prüfen; Ergebnis dokumentieren.
 - [ ] 6.2 Szenarien- und Testzuordnung abschließend prüfen (REQ-001 bis REQ-010; nach 6.1). Prüfung: jedes Spec-Szenario hat einen tatsächlich ausgeführten Test mit Ergebnis; Backend-/Frontend-Builds und Tests, OpenSpec-Validierung sowie git diff --check ausführen und konkrete Ergebnisse samt verbleibenden Grenzen dokumentieren.
 
 ## Traceability
@@ -67,17 +68,17 @@ der betroffenen Funktionstasks, keine erst am Projektende nachgeholten Prüfunge
 | REQ-005 | loan | 1.2, 3.1, 3.3, 3.4, 6.1, 6.2 |
 | REQ-006 | loan | 1.1, 1.3, 3.2, 3.1, 3.6, 3.5, 6.1, 6.2 |
 | REQ-007 | loan | 4.1, 4.2, 6.1, 6.2 |
-| REQ-008 | loan | 1.4, 5.1, 5.3, 5.5, 6.1, 6.2 |
-| REQ-009 | loan | 1.1, 1.3, 1.4, 5.1, 5.3, 5.5, 6.1, 6.2 |
+| REQ-008 | loan | 1.4, 5.1, 5.3, 5.5, 5.6, 6.1, 6.2 |
+| REQ-009 | loan | 1.1, 1.3, 1.4, 5.1, 5.3, 5.5, 5.6, 6.1, 6.2 |
 | REQ-010 | loan | 1.1, 1.3, 5.2, 5.4, 5.5, 6.1, 6.2 |
 
 | Domain Rule | Abdeckung |
 | --- | --- |
 | DR-01 | REQ-005; Tasks 1.2, 3.1, 3.3 |
 | DR-02 | REQ-004/005; Tasks 2.2, 3.1, 3.4 |
-| DR-03 | REQ-008; Tasks 5.1, 5.3, 5.5 |
+| DR-03 | REQ-008; Tasks 5.1, 5.3, 5.5, 5.6 |
 | DR-04 | REQ-006; Tasks 1.3, 3.2, 3.1, 3.5, 3.6 |
-| DR-05 | REQ-008/009/010; Tasks 5.1, 5.2, 5.5 |
+| DR-05 | REQ-008/009/010; Tasks 5.1, 5.2, 5.5, 5.6 |
 | DR-06 | REQ-006; Tasks 3.1, 3.2, 3.5 |
 | DR-07 | REQ-002/004/008; Tasks 2.2, 3.1, 5.1, 5.5 |
 

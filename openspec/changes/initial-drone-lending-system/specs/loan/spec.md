@@ -186,6 +186,17 @@ bleiben Status, ReturnDate und alle übrigen gespeicherten Daten unverändert.
 - THEN antwortet das Backend mit HTTP 409 und Problem-JSON.
 - AND beide Loans samt Daten bleiben unverändert und die Drone bleibt Loaned.
 
+Rückgaben derselben aktiven Loan SHALL auch bei gleichzeitigen Anfragen genau
+einen erfolgreichen Zustandswechsel zulassen; der weitere Versuch SHALL HTTP
+409 liefern, ohne das gespeicherte ReturnDate zu überschreiben.
+
+#### Scenario: Gleichzeitige Rückgaben
+
+- GIVEN eine Active Loan mit ReturnDate null und keine unabhängige technische Störung.
+- WHEN zwei gültige Rückgabeanfragen für dieselbe Loan gleichzeitig eintreffen.
+- THEN gelingt genau eine Rückgabe und die andere Anfrage erhält HTTP 409 mit Problem-JSON.
+- AND nach erneutem Laden ist die Loan Returned mit genau dem ReturnDate der erfolgreichen Rückgabe und unveränderten LoanItems; die Drone ist Available.
+
 #### Scenario: Unbekannte Loan zurückgeben
 
 - GIVEN die angefragte LoanId existiert nicht.
