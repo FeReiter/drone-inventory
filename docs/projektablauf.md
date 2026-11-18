@@ -957,3 +957,52 @@ liefen mit dem vorhandenen lokalen SDK 10.0.401. Die Abhängigkeiten wurden
 für diesen Task nicht aktualisiert.
 
 Task 1.2 ist auf dem Feature-Branch geprüft. Review und Merge stehen aus.
+
+## Backend-Uhr und Problem-JSON am 18. November 2026
+
+Der Merge von PR #34 in `main` wurde als `49e83c8` bestätigt.
+Issue #7 wurde nach Prüfung seiner Akzeptanzkriterien mit Merge-Kommentar
+geschlossen und auf `Done` gesetzt. Danach begann
+[Issue #8](https://github.com/FeReiter/drone-inventory/issues/8) auf
+`feat/8-clock-problem-details` im isolierten Checkout.
+Der zugehörige OpenSpec-Task 1.4 setzt Task 1.1 voraus.
+
+Für REQ-004 und REQ-009 wandelt `ViennaCalendar` die UTC-Zeit eines
+injizierten `TimeProvider` in den Kalendertag für `Europe/Vienna` um.
+Das Backend registriert im Betrieb `TimeProvider.System`. Die Datumswerte
+sind `DateOnly` und werden als JSON-String im Format `YYYY-MM-DD`
+serialisiert. LoanDate und ReturnDate werden in den späteren Endpunkten
+automatisch aus dieser Uhr gesetzt. Bei Active bleibt ReturnDate null.
+
+Der gemeinsame HTTP-Vertrag für REQ-001, REQ-003, REQ-004, REQ-008 und
+REQ-009 nutzt ASP.NET Core ProblemDetails. `application/problem+json`
+enthält `status`, `title` und `detail`. Bei Feldfehlern bildet `errors`
+Feldnamen auf Meldungslisten ab. Die späteren Endpunkte können dazu
+`TypedResults.ValidationProblem` für Feldfehler und
+`TypedResults.Problem` für sonstige fachliche Fehler verwenden.
+Der Vertrag sieht 400 bei ungültigen Eingaben, 404 bei unbekannten
+Referenzen und 409 bei fachlichen Konflikten vor. Die Middleware ergänzt
+einen allgemeinen Detailtext, wenn keiner angegeben wurde, und liefert
+bei unbehandelten technischen Ausnahmen HTTP 500 ohne interne Ausnahmedetails.
+
+Die Uhrtests setzen feste UTC-Zeitpunkte vor und nach Wiener Mitternacht
+in Winter- und Sommerzeit sowie an der UTC-Tagesgrenze. Die HTTP-Tests
+verwenden einen lokalen Testhost mit derselben ProblemDetails-Konfiguration
+und prüfen 400 mit Feldfehlern, 404, einen expliziten 409 und einen 500 nach
+einer technischen Ausnahme. Die fachlichen Vorgänge, die diese Antworten
+später auslösen, gehören zu den jeweiligen Funktionstasks.
+
+| Prüfung | Ergebnis |
+| --- | --- |
+| `dotnet build backend/DroneInventory.Api/DroneInventory.Api.csproj` | 0 Warnungen und 0 Fehler mit lokalem SDK 10.0.401 |
+| `dotnet test backend/DroneInventory.Api.Tests/DroneInventory.Api.Tests.csproj` | 26 Tests bestanden, davon 6 Uhr- und 4 HTTP-Fälle neu |
+| `npm run build` und `npm test -- --watch=false` im Frontend | Build erfolgreich, 2 Tests bestanden |
+| `npm audit --json` | 12 bestehende High-Befunde und 0 Critical |
+| `openspec validate initial-drone-lending-system --strict --no-interactive` | Change gültig |
+| `git diff --check` und `git diff --cached --check` | Ohne Befund |
+
+Das systemweite SDK 10.0.114 meldete erneut `NETSDK1226` wegen fehlender
+ASP.NET-Core-Pruning-Daten. Für Backend-Build und Tests wurde das vorhandene
+lokale SDK 10.0.401 verwendet. Es wurden keine Abhängigkeiten aktualisiert.
+
+Task 1.4 ist auf dem Feature-Branch geprüft. Review und Merge stehen aus.
