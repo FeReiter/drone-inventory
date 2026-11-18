@@ -63,6 +63,10 @@ namespace DroneInventory.Api.Persistence.Migrations
 
                     b.HasIndex("StudentGroupId");
 
+                    b.HasIndex(new[] { "DroneId" }, "IX_Loans_DroneId_Active")
+                        .IsUnique()
+                        .HasFilter("\"Status\" = 'Active'");
+
                     b.ToTable("Loans", t =>
                         {
                             t.HasCheckConstraint("CK_Loans_Status", "\"Status\" IN ('Active', 'Returned')");
