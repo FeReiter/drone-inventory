@@ -817,3 +817,37 @@ das Issue zum bestehenden Project hinzugefügt und auf Backlog gesetzt.
 Veröffentlichung auf dem neuen Dokumentationsbranch mit PR gegen main.
 Kein automatischer Merge, kein Schließen von Issues, keine erledigten Tasks,
 keine Archivierung und keine Änderung von Anwendungscode oder PDF.
+
+## Implementierungsbeginn am 18. November 2026
+
+[Issue #5](https://github.com/FeReiter/drone-inventory/issues/5) gehört zu
+OpenSpec-Task 1.1 im Change `initial-drone-lending-system`. Es war offen und
+war der erste Task ohne Vorbedingungen. Nach Prüfung des Issues und der
+OpenSpec-Artefakte wurde der Project-Status `In Progress` bestätigt.
+Der Branch `feat/5-ef-core-sqlite` basiert auf `origin/main` bei `844bcbe`
+(Merge von PR #31). Ein separater Checkout ließ die uncommitteten Dateien
+einschließlich der Projektauftrag-PDF im ursprünglichen Checkout liegen.
+
+Das API-Projekt referenziert den EF-Core-SQLite-Provider in Version 10.0.14.
+Das neue xUnit-Testprojekt für .NET 10 referenziert das API-Projekt und nutzt
+damit denselben Provider. Der Test erstellt einen eigenen temporären Ordner,
+öffnet über EF Core eine SQLite-Datei, prüft Dateiexistenz und Verbindungsstatus,
+schließt die Verbindung und räumt den Ordner auch im Fehlerfall auf. Der Test
+deckt das technische Akzeptanzkriterium aus Issue #5 ab. Schema und Migration
+folgen in Task 1.3. Die fachlichen Szenarien aus REQ-001 bis REQ-010 werden in
+den zugehörigen Funktionstasks geprüft.
+
+| Prüfung | Ergebnis |
+| --- | --- |
+| `dotnet build backend/DroneInventory.Api/DroneInventory.Api.csproj` | Erfolgreich mit lokalem SDK 10.0.401, 0 Warnungen und 0 Fehler |
+| `dotnet test backend/DroneInventory.Api.Tests/DroneInventory.Api.Tests.csproj` | 1 SQLite-Test bestanden, 0 fehlgeschlagen |
+| `npm ci`, `npm run build` und `npm test -- --watch=false` im Frontend | Installation und Build erfolgreich, 2 bestehende Tests bestanden. npm meldete 12 Findings mit Schweregrad High im bestehenden Abhängigkeitsbaum. |
+| `openspec validate initial-drone-lending-system --strict --no-interactive` | Change gültig |
+| `git diff --check` und `git diff --cached --check` | Ohne Befund |
+
+Das systemweite SDK 10.0.114 meldete beim Build NETSDK1226 für fehlende
+ASP.NET-Core-Pruning-Daten. Für Build und Backend-Test wurde daher das bereits
+vorhandene `$HOME/.dotnet/dotnet` mit ASP.NET-Core-Runtime 10.0.12 verwendet.
+
+Task 1.1 ist auf dem Feature-Branch umgesetzt und geprüft. Review und Merge
+stehen aus.
