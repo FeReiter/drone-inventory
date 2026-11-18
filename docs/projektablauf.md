@@ -851,3 +851,61 @@ vorhandene `$HOME/.dotnet/dotnet` mit ASP.NET-Core-Runtime 10.0.12 verwendet.
 
 Task 1.1 ist auf dem Feature-Branch umgesetzt und geprüft. Review und Merge
 stehen aus.
+
+## SQLite-Schema und erste Migration am 18. November 2026
+
+Der Merge von PR #32 in `main` wurde als Commit `81c5be8` bestätigt.
+Issue #5 wurde nach Prüfung der Akzeptanzkriterien mit einem Merge-Kommentar
+geschlossen und im Project auf `Done` gesetzt. Danach begann
+[Issue #6](https://github.com/FeReiter/drone-inventory/issues/6) auf
+`feat/6-initial-sqlite-schema` im isolierten Checkout. Es gehört zum ersten
+offenen OpenSpec-Task 1.3 und setzt Task 1.1 voraus.
+
+`DroneInventoryDbContext` bildet Drone, StudentGroup, Loan und LoanItem ab.
+Die erste EF-Core-Migration `20261118083000_InitialSchema` erstellt diese
+Tabellen mit generierten IDs, Fremdschlüsseln und restriktiven Löschregeln.
+Status und Type werden als lesbare Texte mit erlaubten Werten gespeichert.
+Quantity ist ein nichtnegativer SQLite-Integer im Wertebereich des C#-Typs
+`int`. Der eindeutige Index auf `(LoanId, Type)` verhindert doppelte
+Zubehörpositionen desselben Typs je Loan. LoanDate und ReturnDate verwenden
+`DateOnly`, wobei ReturnDate für eine aktive Loan null sein kann.
+Description ist als optionaler Freitext abgebildet. Der partielle Index für
+aktive Loans gehört zu Task 1.2.
+
+Das API-Projekt registriert den Kontext mit der konfigurierbaren Verbindung
+`ConnectionStrings:DroneInventory`. Standard ist die lokale Datei
+`drone-inventory.db` mit aktivierten Fremdschlüsseln. Die Migration wird
+explizit ausgeführt. Für die Prüfung kam `dotnet-ef` 10.0.14 zum Einsatz.
+Vom Repository-Stamm aus lässt sich die Prüfung mit installiertem Tool
+und einer frischen temporären Datei wiederholen:
+
+```bash
+migration_check_dir=$(mktemp -d)
+dotnet ef database update --project backend/DroneInventory.Api \
+  --connection "Data Source=$migration_check_dir/schema.db;Foreign Keys=True"
+dotnet ef migrations has-pending-model-changes --project backend/DroneInventory.Api
+```
+
+| Prüfung | Ergebnis |
+| --- | --- |
+| `dotnet build backend/DroneInventory.Api/DroneInventory.Api.csproj` | 0 Warnungen und 0 Fehler mit SDK 10.0.401 |
+| `dotnet test backend/DroneInventory.Api.Tests/DroneInventory.Api.Tests.csproj` | 15 bestanden. 1 vorhandener Verbindungstest, 1 Migrationstest mit Wiederöffnen und 13 Fälle für Datenbankregeln. |
+| `dotnet ef database update` und `dotnet ef migrations has-pending-model-changes` | Migration auf temporärer Datei angewendet. Modell und Snapshot stimmen überein. |
+| `npm run build` und `npm test -- --watch=false` im Frontend | Build erfolgreich, 2 vorhandene Tests bestanden |
+| `npm audit --json` | 12 bestehende High-Befunde, 0 Critical. Frontend-Abhängigkeiten wurden im Rahmen dieses Tasks nicht aktualisiert. |
+| `openspec validate initial-drone-lending-system --strict --no-interactive` | Change gültig |
+| `git diff --check` und `git diff --cached --check` | Ohne Befund |
+
+Der Migrationstest lädt nach erneutem Öffnen eine aktive und eine
+zurückgegebene Loan mit Zuordnungen, Datumswerten und ursprünglichen LoanItems.
+Direkte SQL-Schreibversuche prüfen fehlende Referenzen, Löschschutz,
+ungültige Status- und Type-Werte, negative, gebrochene und nichtnumerische
+Mengen, Überlauf des C#-Wertebereichs und doppelte Zubehörpositionen.
+Die Prüfung deckt die Persistenzanteile von REQ-001, REQ-003, REQ-004,
+REQ-006, REQ-009 und REQ-010 ab. API-Verhalten folgt in den Funktionstasks.
+
+Das systemweite SDK 10.0.114 meldete erneut NETSDK1226 wegen fehlender
+ASP.NET-Core-Pruning-Daten. Für EF-Werkzeug, Build und Tests wurde das lokal
+vorhandene SDK 10.0.401 mit ASP.NET-Core-Runtime 10.0.12 verwendet.
+
+Task 1.3 ist auf dem Feature-Branch geprüft. Review und Merge stehen aus.
