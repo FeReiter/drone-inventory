@@ -909,3 +909,51 @@ ASP.NET-Core-Pruning-Daten. Für EF-Werkzeug, Build und Tests wurde das lokal
 vorhandene SDK 10.0.401 mit ASP.NET-Core-Runtime 10.0.12 verwendet.
 
 Task 1.3 ist auf dem Feature-Branch geprüft. Review und Merge stehen aus.
+
+## Datenbankregel für aktive Loans am 18. November 2026
+
+PR #33 wurde als `8132a56` in `main` gemergt. Issue #6 wurde nach Prüfung
+der dokumentierten Akzeptanzkriterien geschlossen und auf `Done` gesetzt.
+Anschließend begann [Issue #7](https://github.com/FeReiter/drone-inventory/issues/7)
+auf `feat/7-active-loan-index` im isolierten Checkout. OpenSpec-Task 1.2
+setzt das Schema aus Task 1.3 voraus und deckt den Datenbankteil von REQ-005 ab.
+
+Die EF-Core-Migration `20261118085635_UniqueActiveLoanPerDrone` ergänzt
+`IX_Loans_DroneId_Active` auf `Loans(DroneId)`. Der eindeutige Index
+berücksichtigt nur Zeilen mit `Status = 'Active'`. Damit können mehrere
+zurückgegebene Loans derselben Drone sowie aktive Loans verschiedener
+Drones gespeichert werden. Der bestehende allgemeine Index auf DroneId
+bleibt für Abfragen über alle Loans erhalten. Die HTTP-Konfliktantwort
+und konkurrierende API-Aufrufe werden in Tasks 3.1 und 3.3 geprüft.
+
+Der neue Test startet mit dem früheren Schema und befüllt es vor dem
+Upgrade. Nach der Migration speichert er eine weitere Returned Loan derselben
+Drone und eine Active Loan für eine andere Drone. SQLite lehnt anschließend
+die zweite Active Loan für dieselbe Drone mit `SQLITE_CONSTRAINT_UNIQUE`
+(2067) ab. Eine neue Verbindung liest die ursprüngliche aktive Loan und die
+erwarteten übrigen Datensätze. Ein bestehender Fremdschlüsseltest wurde
+angepasst, damit er gezielt auf eine ungültige StudentGroup prüft. Beim ersten
+Lauf löste sein früherer INSERT bereits die neue Eindeutigkeitsregel aus.
+
+Gezielter Prüfbefehl vom Repository-Stamm:
+
+```bash
+dotnet test backend/DroneInventory.Api.Tests/DroneInventory.Api.Tests.csproj \
+  --filter FullyQualifiedName~IndexAllowsOnlyOneActiveLoanPerDroneAfterUpgrade
+```
+
+| Prüfung | Ergebnis |
+| --- | --- |
+| `dotnet build backend/DroneInventory.Api/DroneInventory.Api.csproj` | 0 Warnungen und 0 Fehler mit lokalem SDK 10.0.401 |
+| `dotnet test backend/DroneInventory.Api.Tests/DroneInventory.Api.Tests.csproj` | 16 Tests bestanden, einschließlich Migration mit vorhandenen Daten |
+| `npm run build` und `npm test -- --watch=false` im Frontend | Build erfolgreich, 2 Tests bestanden |
+| `npm audit --json` | Weiterhin 12 High-Befunde und 0 Critical in den bestehenden Abhängigkeiten |
+| `openspec validate initial-drone-lending-system --strict --no-interactive` | Change gültig |
+| `git diff --check` und `git diff --cached --check` | Ohne Befund |
+
+Das systemweite SDK 10.0.114 meldete erneut `NETSDK1226` wegen fehlender
+ASP.NET-Core-Pruning-Daten. Migrationserstellung, Backend-Build und Tests
+liefen mit dem vorhandenen lokalen SDK 10.0.401. Die Abhängigkeiten wurden
+für diesen Task nicht aktualisiert.
+
+Task 1.2 ist auf dem Feature-Branch geprüft. Review und Merge stehen aus.

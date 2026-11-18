@@ -17,6 +17,10 @@ public sealed class DroneInventoryDbContext(DbContextOptions<DroneInventoryDbCon
             loan.ToTable(table => table.HasCheckConstraint(
                 "CK_Loans_Status", "\"Status\" IN ('Active', 'Returned')"));
             loan.Property(entity => entity.Status).HasConversion<string>();
+            loan.HasIndex(entity => entity.DroneId);
+            loan.HasIndex(entity => entity.DroneId, "IX_Loans_DroneId_Active")
+                .IsUnique()
+                .HasFilter("\"Status\" = 'Active'");
             loan.HasOne<Drone>().WithMany().HasForeignKey(entity => entity.DroneId)
                 .OnDelete(DeleteBehavior.Restrict);
             loan.HasOne<StudentGroup>().WithMany().HasForeignKey(entity => entity.StudentGroupId)
